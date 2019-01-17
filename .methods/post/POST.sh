@@ -9,13 +9,12 @@ is_in() {
     local arr=("$@")
     local in=0
 
-    for i in "${arr[@]}"
-        do
-            if [[ $i == $target ]]; then
-                in=1
-                break
-            fi
-        done
+    for i in "${arr[@]}"; do
+        if [[ $i == $target ]]; then
+            in=1
+            break
+        fi
+    done
 
     echo "$in"
 
@@ -30,33 +29,30 @@ create_data() {
     local data="{"
     local sep=""
 
-    for file in $(ls .methods/post/_params)
+    for file in $(ls .methods/post/_params); do
+        local is=$(is_in "$file" "${ignored[@]}")
 
-        do
-            local is=$(is_in "$file" "${ignored[@]}")
+        if [ $is -eq 0 ]; then
+            local key=${file%.txt}
+            local header=$(head -n 1 ".methods/post/_params/${file}")
 
-            if [ $is -eq 0 ]; then
-
-                local key=${file%.txt}
-                local header=$(head -n 1 ".methods/post/_params/${file}")
-
-                if [[ $header == "__TYPE@RANDOMNUMBER__" ]]; then
-                    local min=$(sed "2q;d" ".methods/post/_params/${file}")
-                    local max=$(sed "3q;d" ".methods/post/_params/${file}")
-                    local diff=$((max - min + 1))
-                    local value=$(( ($RANDOM % diff) + min ))
+            if [[ $header == "__TYPE@RANDOMNUMBER__" ]]; then
+                local min=$(sed "2q;d" ".methods/post/_params/${file}")
+                local max=$(sed "3q;d" ".methods/post/_params/${file}")
+                local diff=$((max - min + 1))
+                local value=$(( ($RANDOM % diff) + min ))
 
 
-                else
-                    local n_of_lines=$(wc -l < ".methods/post/_params/${file}")
-                    local f_line=$(( ($RANDOM % n_of_lines) + 1  ))
-                    local value=$(sed "${f_line}q;d" ".methods/post/_params/${file}")
-                fi
-
-                data="${data}${sep} \"${key}\":\"${value}\""
-                sep=","
+            else
+                local n_of_lines=$(wc -l < ".methods/post/_params/${file}")
+                local f_line=$(( ($RANDOM % n_of_lines) + 1  ))
+                local value=$(sed "${f_line}q;d" ".methods/post/_params/${file}")
             fi
-        done
+
+            data="${data}${sep} \"${key}\":\"${value}\""
+            sep=","
+        fi
+    done
 
     echo "$data }"
 

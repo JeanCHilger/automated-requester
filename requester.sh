@@ -1,7 +1,8 @@
 #!/bin/bash
+set -u
 
 requester__new() {
-    # Creates a new 'environment' for executing custom requests.
+    # Creates a new 'workspaces' for executing custom requests.
 
     if [ -z "$1" ]; then
         echo "Argument <env-name> required."
@@ -11,8 +12,7 @@ requester__new() {
         cp -r ".methods/" "$1/"
         cp ".manage.sh" "$1/manage.sh"
 
-        for method in $(ls .methods)
-        do
+        for method in $(ls .methods); do
             touch "$1/.methods/$method/.index.conf"
             echo -e "URL=\"\"\nVERBOSE=\"\"\nIGNORE_FILES=\"\"\nHEADERS=\"\"" > "$1/.methods/$method/.index.conf"
 
@@ -26,10 +26,9 @@ requester__new() {
 requester__help() {
     # Prompts a help message.
 
-    echo "Welcome to the 'automated-requester' manager!"
     echo "Available commands: "
     echo ""
-    echo -e "\tnew <env-name>\tCreates a new 'environment' for executing custom requests under a directory called <env-name>."
+    echo -e "\tnew <workspace-name>\tCreates a new 'workspace' for executing custom requests under a directory called <workspace-name>."
 }
 
 # "main" section
