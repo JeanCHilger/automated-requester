@@ -1,31 +1,33 @@
 #!/bin/bash
 
-CONFIG_FILE=".index.conf"
+CONFIG_FILE=".methods/post/.index.conf"
 
 manage__seturl() {
     # Sets or resets the URL parameter for the request.
 
-    local NEW_VAL=$1
-    local TARGET="URL"
-    sed -i "s/\(^$TARGET *= *\).*/\1$NEW_VAL/" $CONFIG_FILE
+    local NEW_VAL=$1; shift
+    sed -i "s_\(^URL=*\).*_\1${NEW_VAL}_" $CONFIG_FILE
 }
 
 manage__setverbose() {
     # Sets or resets the VERBOSE option of the curl.
 
-    sed -i "s/\(VERBOSE *= *\).*/\1$1/" $CONFIG_FILE
+    local NEW_VAL=$1; shift
+    sed -i "s_\(^VERBOSE=*\).*_\1${NEW_VAL}_" $CONFIG_FILE
 }
 
 manage__setignore() {
     # Adds a new list of ignored files.
 
-    sed -i "s/\(VERBOSE *= *\).*/\1${@}/" $CONFIG_FILE
+    local NEW_VAL=$1; shift
+    sed -i "s_\(^IGNORE\_FILES=*\).*_\1${NEW_VAL}_" $CONFIG_FILE
 }
 
 manage__setheader() {
     # Adds a new list of ignored files.
 
-    sed -i "s/\(VERBOSE *= *\).*/\1${@}/" $CONFIG_FILE
+    local NEW_VAL=$1; shift
+    sed -i "s_\(^HEADERS=*\).*_\1${NEW_VAL}_" $CONFIG_FILE
 }
 
 manage__run() {
