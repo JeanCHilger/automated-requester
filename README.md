@@ -1,3 +1,5 @@
+[![Code Size](https://img.shields.io/github/languages/code-size/JeanCHilger/automated-requester.svg?colorB=%2379ab00)](#)
+
 # automated-requester
 A tool to accomplish some automatic HTTP requests, intended to help testing backend apps.
 
