@@ -1,17 +1,21 @@
 #!/bin/bash
+#set -u
+set -e
 
 . .methods/post/.index.conf
 
 ignored=($IGNORE_FILES)
 
 is_in() {
+    # Checks if a target value is in an array.
+
     local target=$1; shift
     local arr=("$@")
-    local in=0
+    local in=false
 
     for i in "${arr[@]}"; do
         if [[ $i == $target ]]; then
-            in=1
+            in=true
             break
         fi
     done
@@ -30,9 +34,8 @@ create_data() {
     local sep=""
 
     for file in $(ls .methods/post/_params); do
-        local is=$(is_in "$file" "${ignored[@]}")
 
-        if [ $is -eq 0 ]; then
+        if ! $(is_in "$file" "${ignored[@]}"); then
             local key=${file%.txt}
             local header=$(head -n 1 ".methods/post/_params/${file}")
 
@@ -41,7 +44,6 @@ create_data() {
                 local max=$(sed "3q;d" ".methods/post/_params/${file}")
                 local diff=$((max - min + 1))
                 local value=$(( ($RANDOM % diff) + min ))
-
 
             else
                 local n_of_lines=$(wc -l < ".methods/post/_params/${file}")
