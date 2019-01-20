@@ -1,5 +1,3 @@
-![Release](https://img.shields.io/github/release/JeanCHilger/automated-requester.svg)
-
 # automated-requester
 A tool to accomplish some automatic HTTP requests, intended to help testing backend apps.
 
