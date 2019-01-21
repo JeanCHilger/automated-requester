@@ -1,2 +1,2 @@
 ma/
-*/*test*.sh
+*/[test].*
