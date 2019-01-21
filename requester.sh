@@ -1,5 +1,6 @@
 #!/bin/bash
 set -u
+set -e
 
 requester__new() {
     # Creates a new 'workspaces' for executing custom requests.
@@ -13,8 +14,9 @@ requester__new() {
         cp ".manage.sh" "$1/manage.sh"
 
         for method in $(ls .methods); do
-            touch "$1/.methods/$method/.index.conf"
+            touch $1/.methods/$method/.index.conf
             echo -e "URL=\"\"\nVERBOSE=\"\"\nIGNORE_FILES=\"\"\nHEADERS=\"\"" > "$1/.methods/$method/.index.conf"
+            mkdir $1/.methods/$method/_params/
 
         done
 

@@ -5,11 +5,9 @@ set -e
 . .methods/post/.index.conf
 
 ignored=($IGNORE_FILES)
-url=$URL
-data=""
 
 is_in() {
-    # Tests if a value is in an array.
+    # Checks if a target value is in an array.
 
     local target=$1; shift
     local arr=("$@")
@@ -27,27 +25,12 @@ is_in() {
     return 0
 }
 
-set_url() {
-    # Sets the url according to path vars
-
-    vars=$1; shift
-    temp=$URL
-
-    if [[ "${URL: -1}" == "/"  ]]; then
-        echo "${URL}${vars}"
-
-    else
-        echo "${URL}/${vars}"
-
-    fi
-}
-
-parse_data() {
+create_data() {
     # Assembles a JSON-like string variable with
     # keys being the name of the files found in /_params
     # and the values being random lines of this files.
 
-    local _data="{"
+    local data="{"
     local sep=""
 
     for file in $(ls .methods/post/_params); do
@@ -55,15 +38,6 @@ parse_data() {
         if ! $(is_in "$file" "${ignored[@]}"); then
             local key=${file%.txt}
             local header=$(head -n 1 ".methods/post/_params/${file}")
-            local pathvar=false
-
-            if [[ $header == "__TYPE@PATHVAR__" ]]; then
-                pathvar=true
-                tail -n +2 ".methods/post/_params/${file}" > ".methods/post/_params/${file}.tmp"
-                mv ".methods/post/_params/${file}.tmp" ".methods/post/_params/${file}"
-
-                header=$(head -n 1 ".methods/post/_params/${file}")
-            fi
 
             if [[ $header == "__TYPE@RANDOMNUMBER__" ]]; then
                 local min=$(sed "2q;d" ".methods/post/_params/${file}")
@@ -77,26 +51,17 @@ parse_data() {
                 local value=$(sed "${f_line}q;d" ".methods/post/_params/${file}")
             fi
 
-            if $pathvar; then
-                url=$(set_url $value)
-
-                sed -i "1s/^/__TYPE@PATHVAR__\n/" ".methods/post/_params/${file}"
-                # same as sed -1 "1__TYPE@PATHVAR__" ".methods/post/_params/${file}"
-
-            else
-                _data="${_data}${sep} \"${key}\":\"${value}\""
-                sep=","
-            fi
+            data="${data}${sep} \"${key}\":\"${value}\""
+            sep=","
         fi
     done
 
-    data="$_data }"
+    echo "$data }"
 
     return 0
 }
 
-# TODO: Is this a bad solution?
-parse_data
+data=$(create_data)
 
 if [ -z $URL ]; then
     echo "No url provided."
@@ -116,10 +81,10 @@ elif [ -z $HEADERS ]; then
 fi
 
 if [ $VERBOSE -eq 0 ]; then
-    curl -X POST "$url" -H "$HEADERS" -d "$data"
+    curl -X POST "$URL" -H "$HEADERS" -d "$data"
 
 elif [ $VERBOSE -eq 1 ]; then
-    curl -v -X POST "$url" -H "$HEADERS" -d "$data"
+    curl -v -X POST "$URL" -H "$HEADERS" -d "$data"
 
 else
     echo "ERROR: Unknown value for 'verbose' option."

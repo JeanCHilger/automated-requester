@@ -2,14 +2,13 @@
 #set -u
 set -e
 
-. .methods/post/.index.conf
+. .methods/get/.index.conf
 
 ignored=($IGNORE_FILES)
 url=$URL
 data=""
 
 is_in() {
-    # Tests if a value is in an array.
 
     local target=$1; shift
     local arr=("$@")
@@ -29,7 +28,6 @@ is_in() {
 
 set_url() {
     # Sets the url according to path vars
-
     vars=$1; shift
     temp=$URL
 
@@ -50,38 +48,38 @@ parse_data() {
     local _data="{"
     local sep=""
 
-    for file in $(ls .methods/post/_params); do
+    for file in $(ls .methods/get/_params); do
 
         if ! $(is_in "$file" "${ignored[@]}"); then
             local key=${file%.txt}
-            local header=$(head -n 1 ".methods/post/_params/${file}")
+            local header=$(head -n 1 ".methods/get/_params/${file}")
             local pathvar=false
 
             if [[ $header == "__TYPE@PATHVAR__" ]]; then
                 pathvar=true
-                tail -n +2 ".methods/post/_params/${file}" > ".methods/post/_params/${file}.tmp"
-                mv ".methods/post/_params/${file}.tmp" ".methods/post/_params/${file}"
+                tail -n +2 ".methods/get/_params/${file}" > ".methods/get/_params/${file}.tmp"
+                mv ".methods/get/_params/${file}.tmp" ".methods/get/_params/${file}"
 
-                header=$(head -n 1 ".methods/post/_params/${file}")
+                header=$(head -n 1 ".methods/get/_params/${file}")
             fi
 
             if [[ $header == "__TYPE@RANDOMNUMBER__" ]]; then
-                local min=$(sed "2q;d" ".methods/post/_params/${file}")
-                local max=$(sed "3q;d" ".methods/post/_params/${file}")
+                local min=$(sed "2q;d" ".methods/get/_params/${file}")
+                local max=$(sed "3q;d" ".methods/get/_params/${file}")
                 local diff=$((max - min + 1))
                 local value=$(( ($RANDOM % diff) + min ))
 
             else
-                local n_of_lines=$(wc -l < ".methods/post/_params/${file}")
+                local n_of_lines=$(wc -l < ".methods/get/_params/${file}")
                 local f_line=$(( ($RANDOM % n_of_lines) + 1  ))
-                local value=$(sed "${f_line}q;d" ".methods/post/_params/${file}")
+                local value=$(sed "${f_line}q;d" ".methods/get/_params/${file}")
             fi
 
             if $pathvar; then
                 url=$(set_url $value)
 
-                sed -i "1s/^/__TYPE@PATHVAR__\n/" ".methods/post/_params/${file}"
-                # same as sed -1 "1__TYPE@PATHVAR__" ".methods/post/_params/${file}"
+                sed -i "1s/^/__TYPE@PATHVAR__\n/" ".methods/get/_params/${file}"
+                # same as sed -1 "1__TYPE@PATHVAR__" ".methods/get/_params/${file}"
 
             else
                 _data="${_data}${sep} \"${key}\":\"${value}\""
@@ -116,10 +114,10 @@ elif [ -z $HEADERS ]; then
 fi
 
 if [ $VERBOSE -eq 0 ]; then
-    curl -X POST "$url" -H "$HEADERS" -d "$data"
+    curl -X GET "$url" -H "$HEADERS" -d "$data"
 
 elif [ $VERBOSE -eq 1 ]; then
-    curl -v -X POST "$url" -H "$HEADERS" -d "$data"
+    curl -v -X GET "$url" -H "$HEADERS" -d "$data"
 
 else
     echo "ERROR: Unknown value for 'verbose' option."
