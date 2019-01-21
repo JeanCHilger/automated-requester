@@ -63,9 +63,14 @@ manage__showconfig() {
 manage__run() {
     # Calls the bash to execute the request.
 
-    local target=${1,,}; shift
-    bash .methods/${target}/${target^^}.sh
-    exit 0
+    local target=${1,,}
+    for folder in $(ls .methods); do
+        if [[ $folder == $target ]]; then
+            bash .methods/${target}/${target^^}.sh
+            exit 0
+        fi
+
+    done
 
     echo -e "\e[31;1mERROR:\e[0m The required method $target isn't available yet."
     exit 1
