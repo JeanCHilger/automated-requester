@@ -64,7 +64,7 @@ manage__run() {
     # Calls the bash to execute the request.
 
     local target=${1,,}; shift
-    bash .methods/${target}/${target^^}.sh
+    bash .methods/SENDER.sh $target
     exit 0
 
     echo -e "\e[31;1mERROR:\e[0m The required method $target isn't available yet."
