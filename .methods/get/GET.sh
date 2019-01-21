@@ -5,7 +5,8 @@ set -e
 . .methods/get/.index.conf
 
 ignored=($IGNORE_FILES)
-export url=$URL
+url=$URL
+data=""
 
 is_in() {
 
@@ -24,8 +25,6 @@ is_in() {
 
     return 0
 }
-
-asd="local"
 
 set_url() {
     # Sets the url according to path vars
@@ -46,7 +45,7 @@ parse_data() {
     # keys being the name of the files found in /_params
     # and the values being random lines of this files.
 
-    local data="{"
+    local _data="{"
     local sep=""
 
     for file in $(ls .methods/get/_params); do
@@ -65,7 +64,6 @@ parse_data() {
             fi
 
             if [[ $header == "__TYPE@RANDOMNUMBER__" ]]; then
-                echo dndhedbkewjnejnfkwnfwnkfwnejfnkefwjfnk >&2
                 local min=$(sed "2q;d" ".methods/get/_params/${file}")
                 local max=$(sed "3q;d" ".methods/get/_params/${file}")
                 local diff=$((max - min + 1))
@@ -78,28 +76,25 @@ parse_data() {
             fi
 
             if $pathvar; then
-                export url=$(set_url $value)
-
-                echo "AAA: $url" >&2
+                url=$(set_url $value)
 
                 sed -i "1s/^/__TYPE@PATHVAR__\n/" ".methods/get/_params/${file}"
                 # same as sed -1 "1__TYPE@PATHVAR__" ".methods/get/_params/${file}"
 
             else
-                data="${data}${sep} \"${key}\":\"${value}\""
+                _data="${_data}${sep} \"${key}\":\"${value}\""
                 sep=","
             fi
         fi
     done
 
-    data="$data }"
+    data="$_data }"
 
     return 0
 }
 
+# TODO: Is this a bad solution?
 parse_data
-echo "AAAAAAAAAAAAAA"
-echo "URL: $url"
 
 if [ -z $URL ]; then
     echo "No url provided."
