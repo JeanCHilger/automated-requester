@@ -1,2 +1,3 @@
-#ma/
-#*/[test].*
+ma/
+*test.*
+test*.*
