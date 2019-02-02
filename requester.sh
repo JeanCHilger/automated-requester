@@ -2,6 +2,8 @@
 set -u
 set -e
 
+METHODS=(get post put delete)
+
 requester__new() {
     # Creates a new 'workspaces' for executing custom requests.
 
@@ -13,11 +15,12 @@ requester__new() {
         cp -r ".methods/" "$1/"
         cp ".manage.sh" "$1/manage.sh"
 
-        for method in $(ls -d .methods/*/); do
+        for method in ${METHODS[@]}; do
             #echo -e "\e[1mMETHOD: \e[0m $method"
-            touch $1/$method/.index.conf
-            echo -e "URL=\"\"\nVERBOSE=\"\"\nIGNORE_FILES=\"\"\nHEADERS=\"\"" > "$1/$method/.index.conf"
-            mkdir $1/$method/_params/
+            mkdir $1/.methods/$method
+            touch $1/.methods/$method/.index.conf
+            echo -e "URL=\"\"\nVERBOSE=\"\"\nIGNORE_FILES=\"\"\nHEADERS=\"\"" > "$1/.methods/$method/.index.conf"
+            mkdir $1/.methods/$method/_params/
 
         done
 
