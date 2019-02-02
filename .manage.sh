@@ -165,7 +165,28 @@ case $subcommand in
 
     param )
         func="addparam";
-        args=$1; shift;
+        while getopts ":rpn" opt; do
+            case ${opt} in
+                r )
+                    echo "RAND" >&2
+                    ;;
+
+                p )
+                    echo "PATHV" >&2
+                    ;;
+
+                n )
+                    echo "NEW FILE" >&2
+                    ;;
+
+                \? )
+                    echo "AAAA: -$OPTARG" >&2
+                    ;;
+            esac
+        done
+        shift $((OPTIND -1))
+
+        args=$1; shift
         ;;
 
     * )
