@@ -5,9 +5,21 @@ set -e
 manage__addparam() {
     # Adds a new parameter file to the list.
 
-    local PARAM_FILE=$1; shift
-    local METHOD=$1; shift
-    cp $PARAM_FILE .methods/${METHOD}/_params/
+    local param_path=$1; shift
+    if [ "$param_path" == "NEW_F" ]; then
+        local file_name=$1; shift
+        local head=$1; shift
+        local method=$1; shift
+        echo -e "Press \e[1mCtrl+D\e[0m to save the file."
+        cat > .methods/${method}/_params/${file_name}
+    else
+
+        local head=$1; shift
+        local method=$1; shift
+        local file_name=$(basename ${param_path})
+        cp $param_path .methods/${method}/_params/
+    fi
+    sed -i "1s/^/${head}/" ".methods/${method}/_params/${file_name}"
 
 }
 
@@ -142,30 +154,58 @@ case $subcommand in
         ;;
 # The code bellow could be set in a only condition
     url )
-        func="seturl";
+        func="seturl"
         args=$1; shift
         ;;
 
     verbose )
 
-        func="setverbose";
+        func="setverbose"
         args=$1; shift
         ;;
 
     ignore )
 
-        func="setignore";
+        func="setignore"
         args=$1; shift
         ;;
 
     header )
-        func="setheader";
+        func="setheader"
         args=$1; shift
         ;;
 
     param )
-        func="addparam";
-        args=$1; shift;
+        func="addparam"
+        head=""
+        args=""
+        while getopts ":rpn" opt; do
+            case ${opt} in
+                r )
+                    head="${head}__TYPE@RANDOMNUMBER__\n"
+                    ;;
+
+                p )
+                    head="${head}__TYPE@PATHVAR__\n"
+                    ;;
+
+                n )
+                    args="NEW_F"
+                    ;;
+
+                \? )
+                    echo "AAAA: -$OPTARG" >&2
+                    ;;
+            esac
+        done
+
+        shift $((OPTIND -1))
+
+        if [ "$args" == "NEW_F" ]; then
+            args="$args $1 $head"
+        else
+            args="$1 $head"
+        fi
         ;;
 
     * )

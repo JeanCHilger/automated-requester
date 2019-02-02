@@ -1,0 +1,11 @@
+Environment ma created.
+Perhaps is needed to configure it.
+
+
+URL=http://localhost:8080/employees
+VERBOSE=1
+IGNORE_FILES=""
+HEADERS="Content-type:application/json"
+
+{"id":26,"firstName":"Linea","lastName":"Tila","age":75,"role":"Thief","name":"Linea Tila","_links":{"self":{"href":"http://localhost:8080/employees/26"},"employees":{"href":"http://localhost:8080/employees"}}}
+'ma excluded.'
