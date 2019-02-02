@@ -13,10 +13,11 @@ requester__new() {
         cp -r ".methods/" "$1/"
         cp ".manage.sh" "$1/manage.sh"
 
-        for method in $(ls .methods); do
-            touch $1/.methods/$method/.index.conf
-            echo -e "URL=\"\"\nVERBOSE=\"\"\nIGNORE_FILES=\"\"\nHEADERS=\"\"" > "$1/.methods/$method/.index.conf"
-            mkdir $1/.methods/$method/_params/
+        for method in $(ls -d .methods/*/); do
+            #echo -e "\e[1mMETHOD: \e[0m $method"
+            touch $1/$method/.index.conf
+            echo -e "URL=\"\"\nVERBOSE=\"\"\nIGNORE_FILES=\"\"\nHEADERS=\"\"" > "$1/$method/.index.conf"
+            mkdir $1/$method/_params/
 
         done
 
