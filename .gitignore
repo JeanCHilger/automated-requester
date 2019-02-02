@@ -1,9 +1,12 @@
+# test workspaces
 ma/*
 ./ma
 
-*test.*
-test*.*
-*/get-test.*
-*/post-test.*
-*/put-test.*
-*/del-test.*
+# test scripts
+*-test.*
+test-*.*
+
+# output files
+**/out
+*/log
+
